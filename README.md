@@ -1,5 +1,7 @@
 # Offline EAGLE-3 drafting for SmolVLM-256M
 
+Copy-paste commands: [`COMMANDS.md`](COMMANDS.md).
+
 A speculative-decoding drafter for a frozen vision-language target. The target is
 never fine-tuned and always prefills the full image; every reduction happens on
 what reaches the drafter. The drafter is one decoder layer, 51.9M parameters, and
@@ -177,7 +179,6 @@ baseline:
 "eagle_aux_injection_mode": "banded_mix_fc",
 "aux_hidden_states_layer_ids": [1, 2, 8, 10, 18, 20, 23, 26, 28],
 "eagle_aux_layer_bands": [[1, 2, 8, 10], [18, 20], [23, 26, 28]],
-"eagle_aux_band_init_layer_ids": [1, 18, 23],
 "fc_norm": true, "norm_output": true,
 
 "branch_distill_loss_weight": 0.1,
@@ -188,9 +189,10 @@ baseline:
 "branch_distill_prob_ratio_threshold": 0.0
 ```
 
-`eagle_aux_band_init_layer_ids` is where each band's softmax starts, so
-initialisation reproduces a three-layer concatenation and the mixture is learned
-away from it. `fc_norm` / `norm_output` are EAGLE 3.1: RMSNorm on the fusion-FC
+Each band starts uniform: the mix logits are zeros, so `softmax([0,...,0]) = 1/n`,
+and training learns the weights from there. `eagle_aux_band_init_layer_ids` is
+leftover in the shipped JSON — the drafter length-checks it and ignores the
+values. `fc_norm` / `norm_output` are EAGLE 3.1: RMSNorm on the fusion-FC
 inputs and on the draft output. `branch_distill_loss_weight: 0` disables the fork
 entirely, and with it the extra teacher forward, which costs about 1.75x a plain
 offline step. `branch_distill_top_k` must be 1 — any other value is rejected.

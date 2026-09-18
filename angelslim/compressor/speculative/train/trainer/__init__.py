@@ -13,10 +13,12 @@
 # limitations under the License.
 
 from .offline_eagle3_trainer import OfflineEagle3Trainer, OfflineVLMEagle3Trainer
+from .online_eagle3_trainer import OnlineVLMEagle3Trainer
 from .trainer_factory import Eagle3TrainerFactory
 
 __all__ = [
     "Eagle3TrainerFactory",
     "OfflineEagle3Trainer",
     "OfflineVLMEagle3Trainer",
+    "OnlineVLMEagle3Trainer",
 ]
