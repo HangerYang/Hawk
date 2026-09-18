@@ -1,0 +1,15 @@
+# The training and data-generation environment. Separate from
+# HiViS/requirements.txt (evaluation), and not compatible with it.
+torch>=2.6.0
+torchvision>=0.21.0
+transformers>=5.6.0
+datasets
+accelerate
+huggingface_hub
+safetensors
+numpy
+pyarrow
+pillow
+tqdm
+# Optional: only needed when the launcher is given DEEPSPEED_CONFIG.
+# deepspeed

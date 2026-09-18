@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv*/
+output/
+dataset/
+results/
+wandb/
+*.egg-info
+.DS_Store
+
+# Benchmark images fetched on demand by hivis/evaluation/benchmark_data.py.
+# The metadata beside them is tracked; the pictures are not.
+HiViS/eval_data/
+HiViS/hivis/evaluation/data/MME_Benchmark_release_version/
+HiViS/hivis/evaluation/data/mm-vet/
+HiViS/hivis/evaluation/data/SEED-Bench-image/
+HiViS/hivis/evaluation/data/vqav2_test500/
