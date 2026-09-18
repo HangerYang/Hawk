@@ -490,35 +490,27 @@ class LlamaAttention(nn.Module):
         self._init_rope()
 
     def _init_rope(self):
-        # Newer transformers auto-populates rope_scaling with {'rope_type': 'default'}
-        # (no "type"/"factor" keys). Treat None or rope_type=='default' as unscaled
-        # RoPE. Same handling as cnets_hivis.LlamaAttention._init_rope.
-        scaling = self.config.rope_scaling
-        rope_type = None
-        if scaling is not None:
-            rope_type = scaling.get("rope_type") or scaling.get("type")
-        if scaling is None or rope_type in (None, "default"):
+        if self.config.rope_scaling is None:
             self.rotary_emb = LlamaRotaryEmbedding(
-                self.head_dim,
-                max_position_embeddings=self.max_position_embeddings,
-                base=self.config.rope_theta,
+                self.head_dim, max_position_embeddings=self.max_position_embeddings,base=self.config.rope_theta
             )
         else:
-            scaling_factor = scaling.get("factor", 1.0)
-            if rope_type == "linear":
+            scaling_type = self.config.rope_scaling["type"]
+            scaling_factor = self.config.rope_scaling["factor"]
+            if scaling_type == "linear":
                 self.rotary_emb = LlamaLinearScalingRotaryEmbedding(
                     self.head_dim,
                     max_position_embeddings=self.max_position_embeddings,
                     scaling_factor=scaling_factor,
                 )
-            elif rope_type == "dynamic":
+            elif scaling_type == "dynamic":
                 self.rotary_emb = LlamaDynamicNTKScalingRotaryEmbedding(
                     self.head_dim,
                     max_position_embeddings=self.max_position_embeddings,
                     scaling_factor=scaling_factor,
                 )
             else:
-                raise ValueError(f"Unknown RoPE scaling type {rope_type}")
+                raise ValueError(f"Unknown RoPE scaling type {scaling_type}")
 
     def _shape(self, tensor: torch.Tensor, seq_len: int, bsz: int):
         return (
