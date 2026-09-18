@@ -105,6 +105,11 @@ ARGS=(
   --run_name "$RUN_NAME"
   --bf16
 )
+if [[ -z "${DEEPSPEED_CONFIG}" ]]; then
+  # Default launch is DDP, not DeepSpeed. A leftover `deepspeed` install still
+  # gets imported by HF Trainer and dies without nvcc (pip CUDA has no compiler).
+  export DS_SKIP_CUDA_CHECK="${DS_SKIP_CUDA_CHECK:-1}"
+fi
 if [[ -n "$DEEPSPEED_CONFIG" ]]; then ARGS+=(--deepspeed "$DEEPSPEED_CONFIG"); fi
 
 mkdir -p "$OUTPUT_DIR"

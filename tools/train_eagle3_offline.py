@@ -30,7 +30,7 @@ from angelslim.compressor.speculative import (
     get_supported_chat_template_type_strings,
     infer_model_params,
 )
-from angelslim.utils import rank0_print
+from angelslim.utils import rank0_print, skip_deepspeed_cuda_probe
 
 
 def parse_args():
@@ -308,6 +308,8 @@ def parse_args():
 
 def train():
     args = parse_args()
+    if not args.deepspeed:
+        skip_deepspeed_cuda_probe()
 
     rank0_print(f"Loading draft model: {args.draft_model_config_path}")
     draft_model_config = DraftModelConfig.from_file(args.draft_model_config_path)

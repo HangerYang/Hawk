@@ -318,3 +318,24 @@ def get_loaders(tokenizer, name, seed=0, seqlen=2048, cache_dir=None):
             valenc.append(tmp.input_ids[:, i : i + seqlen])
         return torch.hstack(valenc)
     raise NotImplementedError(f"Unsupported PPL dataset: {name}")
+
+
+def skip_deepspeed_cuda_probe():
+    """Let Accelerate unwrap a model without a CUDA compiler.
+
+    HuggingFace Trainer always `import deepspeed` to isinstance-check. That
+    import probes nvcc. Pip CUDA wheels (nvidia/cu13, uv, etc.) set CUDA_HOME
+    to a lib tree with no compiler, and DeepSpeed then raises
+    MissingCUDAException. The default launchers do not use DeepSpeed.
+    """
+    os.environ.setdefault("DS_SKIP_CUDA_CHECK", "1")
+    try:
+        import deepspeed  # noqa: F401
+    except Exception:
+        import sys
+        import types
+
+        if "deepspeed" not in sys.modules:
+            dummy = types.ModuleType("deepspeed")
+            dummy.DeepSpeedEngine = type("DeepSpeedEngine", (), {})
+            sys.modules["deepspeed"] = dummy
