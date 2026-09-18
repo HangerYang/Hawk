@@ -22,7 +22,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$ROOT"
 export PYTHONPATH="${ROOT}${PYTHONPATH:+:$PYTHONPATH}"
 
-CONFIG_DIR=angelslim/compressor/speculative/train/configs
+CONFIG_DIR="$ROOT/angelslim/compressor/speculative/train/configs"
 SPLIT=${SPLIT:-train}
 DATASET_PATH=${DATASET_PATH:-dataset/smolvlm256m_offline_src/${SPLIT}.jsonl}
 TARGET_MODEL_NAME_OR_PATH=${TARGET_MODEL_NAME_OR_PATH:-HuggingFaceTB/SmolVLM-256M-Instruct}

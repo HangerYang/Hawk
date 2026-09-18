@@ -12,7 +12,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$ROOT"
 export PYTHONPATH="${ROOT}${PYTHONPATH:+:$PYTHONPATH}"
 
-CONFIG_DIR=angelslim/compressor/speculative/train/configs
+CONFIG_DIR="$ROOT/angelslim/compressor/speculative/train/configs"
 ARM=${ARM:-method}
 case "$ARM" in
   method)   DEFAULT_CONFIG=$CONFIG_DIR/smolvlm-256m-eagle3-banded-mix-fc-3.1-bands-1-2-8-10_18-20_23-26-28-branch-change-top1-w01.json ;;

@@ -122,17 +122,17 @@ class DraftModelConfig:
 
     @classmethod
     def from_file(cls, config_path: Union[str, Path]) -> PretrainedConfig:
-        """Create config from file."""
-        # Check if it's a file or directory
-        if isinstance(config_path, str):
-            config_path = Path(config_path)
+        """Create config from a local JSON file, a directory, or a Hub id."""
+        path = Path(config_path)
+        if not path.is_absolute():
+            path = (Path.cwd() / path).resolve()
 
-        if config_path.is_file():
-            # It's a config file, load it directly
-            with open(config_path, "r", encoding="utf-8") as f:
+        if path.suffix == ".json" or path.is_file():
+            if not path.is_file():
+                raise FileNotFoundError(f"draft config not found: {path}")
+            with open(path, "r", encoding="utf-8") as f:
                 config_dict = json.load(f)
 
-            # Get architectures to determine model class
             architectures = config_dict.get("architectures", [])
             if not architectures:
                 raise ValueError("Config file must contain 'architectures' field")
@@ -142,17 +142,10 @@ class DraftModelConfig:
                 available = DraftModelFactory.get_available_models()
                 raise ValueError(f"Unknown architecture: {arch}. Available: {available}")
 
-            # Get the model class and its config class
             model_class = DraftModelFactory._draft_models[arch]
-            config_class = model_class.config_class
+            return model_class.config_class(**config_dict)
 
-            # Create config instance from dict
-            config = config_class(**config_dict)
-        else:
-            # It's a directory or model name, use AutoConfig
-            config = AutoConfig.from_pretrained(config_path, trust_remote_code=True)
-
-        return config
+        return AutoConfig.from_pretrained(str(config_path), trust_remote_code=True)
 
 
 def create_draft_model(

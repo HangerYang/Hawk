@@ -38,11 +38,21 @@ from angelslim.compressor.speculative.train.data.data_utils import (
 )
 from angelslim.utils import decide_device_for_distributed
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - [Rank %(rank)s] - %(message)s",
+class _RankFormatter(logging.Formatter):
+    """%(rank)s is ours; httpx/transformers logs do not have it."""
+
+    def format(self, record):
+        if not hasattr(record, "rank"):
+            record.rank = "-"
+        return super().format(record)
+
+
+_handler = logging.StreamHandler()
+_handler.setFormatter(
+    _RankFormatter("%(asctime)s - %(levelname)s - [Rank %(rank)s] - %(message)s")
 )
+logging.basicConfig(level=logging.INFO, handlers=[_handler], force=True)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
@@ -542,8 +552,8 @@ def main():
     # Setup distributed environment
     rank, world_size, local_rank = setup_distributed()
     logger.info(
-        f"Distributed environment initialized: pid: {os.getpid()}, rank {rank},"
-        "world_size {world_size}, local_rank {local_rank}",
+        f"Distributed environment initialized: pid: {os.getpid()}, rank {rank}, "
+        f"world_size {world_size}, local_rank {local_rank}",
         extra={"rank": rank},
     )
 
@@ -660,6 +670,7 @@ def main():
 
     except Exception as e:
         logger.error(f"Rank {rank} encountered error: {e}", extra={"rank": rank})
+        raise
 
     finally:
         # Synchronize all processes
