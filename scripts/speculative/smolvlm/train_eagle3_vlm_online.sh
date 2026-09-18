@@ -75,9 +75,6 @@ ARGS=(
   --bf16
 )
 if [[ -n "$EVAL_DATA_PATH" ]]; then ARGS+=(--eval_data_path "$EVAL_DATA_PATH"); fi
-if [[ -z "${DEEPSPEED_CONFIG}" ]]; then
-  export DS_SKIP_CUDA_CHECK="${DS_SKIP_CUDA_CHECK:-1}"
-fi
 if [[ -n "$DEEPSPEED_CONFIG" ]]; then ARGS+=(--deepspeed "$DEEPSPEED_CONFIG"); fi
 [[ -n "${SAMPLE_NUM:-}" ]] && ARGS+=(--sample_num "$SAMPLE_NUM")
 

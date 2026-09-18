@@ -28,7 +28,7 @@ from angelslim.compressor.speculative import (
     create_target_model,
     infer_model_params,
 )
-from angelslim.utils import rank0_print, skip_deepspeed_cuda_probe
+from angelslim.utils import rank0_print
 
 
 def filter_training_args(kwargs):
@@ -95,8 +95,6 @@ def train():
     args = parse_args()
     if args.eval_data_path == "":
         args.eval_data_path = None
-    if not args.deepspeed:
-        skip_deepspeed_cuda_probe()
 
     draft_model_config = DraftModelConfig.from_file(args.draft_model_config_path)
     target_model_type = getattr(draft_model_config, "target_model_type", None)
