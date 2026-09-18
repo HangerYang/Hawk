@@ -280,17 +280,18 @@ def process_token_dict_to_mappings(
 
 def paddingtensor(intensors, N):
     B, n, S = intensors.shape
-    # padding_tensor = torch.zeros(B, N - n, S,dtype=intensors.dtype)
-    padding_tensor = torch.zeros(B, N - n, S, dtype=intensors.dtype)
-    outtensors = torch.cat((intensors, padding_tensor), dim=1)
-    return outtensors
+    padding_tensor = torch.zeros(
+        B, N - n, S, dtype=intensors.dtype, device=intensors.device
+    )
+    return torch.cat((intensors, padding_tensor), dim=1)
 
 
 def paddingtensor2D(intensors, N):
     B, n = intensors.shape
-    padding_tensor = torch.zeros(B, N - n, dtype=intensors.dtype)
-    outtensors = torch.cat((intensors, padding_tensor), dim=1)
-    return outtensors
+    padding_tensor = torch.zeros(
+        B, N - n, dtype=intensors.dtype, device=intensors.device
+    )
+    return torch.cat((intensors, padding_tensor), dim=1)
 
 
 def paddingtensor3D_CBN(tensor_list):
